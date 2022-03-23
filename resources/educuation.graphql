@@ -1,0 +1,145 @@
+scalar Filters @scalar(class: "App\\GraphQL\\Types\\Scalars\\FiltersScalar")
+scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+extend type Query @guard{
+    getQuizzes(page:Int!, q:String @scope(name: "search"), filters:Filters @scope(name: "filter"), sort: _ @orderBy(columns: ["id"])): QuizzesData
+    getAttempts(page:Int!, q:String @scope(name: "search"), filters:Filters @scope(name: "filter"), sort: _ @orderBy(columns: ["id"])): AttemptsData
+}
+
+extend type Mutation {
+	startQuiz(quiz_id: ID! @rules(apply: ["required"])): QuizAttemptResponse @guard
+	attemptQuiz(input: CreateQuestionAnswerInput): attemptResponse @guard
+	attemptSingleQuestion(input: CreateSingleQuestionAnswerInput): attemptResponse @guard
+}
+
+type AttemptsData {
+	items:[QuizAttempt]
+	page_info : CustomPaginator!
+	q:String!
+	filters:Filters
+	sort:Filters
+}
+
+type attemptResponse {
+  message: String
+  score: String
+  scoreOutOf: String
+  questionsAttempted: String
+  correctAnswers: String
+  incorrectAnswers: String
+  quiz: Quiz
+}
+
+type QuizAttemptResponse {
+	status:String
+	message:String!
+  quiz_attempt_id: Int
+  quiz_attempt: QuizAttempt
+}
+
+input CreateQuestionAnswerInput {
+    quiz_attempt_id: ID!
+    question_answers: JSON!
+}
+
+input CreateSingleQuestionAnswerInput {
+    quiz_attempt_id: ID!
+    question_id: ID!
+    answers: JSON!
+}
+
+type QuizzesData {
+	items:[Quiz]
+	page_info : CustomPaginator!
+	q:String!
+	filters:Filters
+	sort:Filters
+}
+
+type CustomPaginator {
+	perPage:Int!
+	currentPage:Int!
+	total:Int!
+	hasMore:Boolean!
+}
+
+type Quiz {
+  id: ID!
+  title: String
+  description: String
+  long_description: String
+  external_media: String
+  img: String
+  total_marks: String
+  pass_marks: String
+  max_attempts: String
+  is_published: Boolean
+  show_slides: Boolean
+  questions: [QuizQuestion] @hasMany
+  slides: [Slide] @hasMany
+  is_attempted: Boolean
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Option {
+  id: ID!
+  question_id: Int
+  title: String @rename(attribute: "option")
+  is_correct: Boolean
+  show_option_media: Boolean
+  order: String
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Question {
+  id: ID!
+  title: String @rename(attribute: "question")
+  question_type_id: Int
+  is_active: Boolean
+  correct_reason: String
+  options: [Option] @hasMany
+  order: String
+  worker_answers: JSON
+  correct_answers: JSON
+  is_correct_option: Boolean
+  is_question_attempted: Boolean
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type QuizQuestion {
+  id: ID!
+  quiz_id: String,
+  question_id: String,
+  question: Question
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Slide {
+  id: ID!
+  quiz_id: Int
+  title: String
+  long_desc: String
+  show_slide: Boolean
+  order: String
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type QuizAttempt {
+  id: ID!
+  quiz: Quiz
+  score: String
+  scoreOutOf: String
+  questionsAttempted: String
+  correctAnswers: String
+  incorrectAnswers: String
+  participant: Worker @belongsTo
+  worker_answers: JSON
+  created_at: DateTime!
+  updated_at: DateTime!
+}

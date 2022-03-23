@@ -1,0 +1,56 @@
+{
+    "name": "digitalcubez/education-module",
+    "description": "Education Module",
+    "keywords": [
+        "digitalcubez",
+        "education-module"
+    ],
+    "homepage": "https://github.com/krunal-digitalcubez/education-module",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Krunal Pawar",
+            "email": "krunal.p@digitalcubez.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "illuminate/support": "^8.0"
+    },
+    "require-dev": {
+        "nunomaduro/larastan": "^0.7.10",
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Digitalcubez\\EducationModule\\": "src",
+            "Digitalcubez\\EducationModule\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Digitalcubez\\EducationModule\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Digitalcubez\\EducationModule\\EducationModuleServiceProvider"
+            ],
+            "aliases": {
+                "EducationModule": "Digitalcubez\\EducationModule\\EducationModuleFacade"
+            }
+        }
+    }
+}
