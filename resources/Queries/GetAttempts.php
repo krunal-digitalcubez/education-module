@@ -2,14 +2,11 @@
 
 namespace App\GraphQL\Queries;
 
-use App\Models\Quiz;
-use App\Models\QuizAttempt;
-use App\Models\Request;
+use Digitalcubez\EducationModule\Models\QuizAttempt;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-
 class GetAttempts {
     /**
      * @param  null  $_

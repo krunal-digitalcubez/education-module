@@ -2,11 +2,9 @@
 
 namespace App\GraphQL\Queries;
 
-use App\Models\Quiz;
-use App\Models\Request;
+use Digitalcubez\EducationModule\Models\Quiz;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class GetQuizzes {

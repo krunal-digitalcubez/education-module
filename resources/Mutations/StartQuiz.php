@@ -3,17 +3,10 @@
 namespace App\GraphQL\Mutations;
 
 use App\Exceptions\GenericException;
-use App\Listeners\SendRequestCreatedNotification;
-use App\Models\Quiz;
-use App\Models\QuizAttempt;
-use App\Models\Request;
-use App\Models\Worker;
-use Exception;
+use Digitalcubez\EducationModule\Models\Quiz;
+use Digitalcubez\EducationModule\Models\QuizAttempt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Notification;
-
 class StartQuiz
 {
   /**
