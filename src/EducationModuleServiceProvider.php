@@ -27,7 +27,7 @@ class EducationModuleServiceProvider extends ServiceProvider
                 __DIR__ . '/../database/seeders/' => database_path('seeders/'),
             ], 'seeds');
             $this->publishes([
-                __DIR__ . '/../database/migrations/' => database_path('migrations/education-module'),
+                __DIR__ . '/../database/migrations/' => database_path('migrations/'),
             ], 'migrations');
             $this->publishes([
               __DIR__ . '/../resources/Mutations' => app_path('GraphQL/Mutations/'),
