@@ -30,13 +30,13 @@ class EducationModuleServiceProvider extends ServiceProvider
                 __DIR__ . '/../database/migrations/' => database_path('migrations/education-module'),
             ], 'migrations');
             $this->publishes([
-              __DIR__ . '/../resources/Mutations' => app_path('GraphQL/'),
+              __DIR__ . '/../resources/Mutations' => app_path('GraphQL/Mutations/'),
             ], 'mutations');
             $this->publishes([
-              __DIR__ . '/../resources/Queries' => app_path('GraphQL/'),
+              __DIR__ . '/../resources/Queries' => app_path('GraphQL/Queries/'),
             ], 'queries');
             $this->publishes([
-              __DIR__ . '/../resources/education.graphql' => base_path('graphql/'),
+              __DIR__ . '/../resources/education.graphql' => base_path('graphql/education.graphql'),
             ], 'graphql');
             // Publishing the views.
             /*$this->publishes([
