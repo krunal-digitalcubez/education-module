@@ -67,11 +67,8 @@ type CustomPaginator {
 type Quiz {
   id: ID!
   title: String
-  th_title: String
   description: String
-  th_description: String
   long_description: String
-  th_long_description: String
   external_media: String
   img: String
   total_marks: String
@@ -90,7 +87,6 @@ type Option {
   id: ID!
   question_id: Int
   title: String @rename(attribute: "option")
-  th_title: String @rename(attribute: "th_option")
   is_correct: Boolean
   show_option_media: Boolean
   order: String
@@ -101,7 +97,6 @@ type Option {
 type Question {
   id: ID!
   title: String @rename(attribute: "question")
-  th_title: String @rename(attribute: "th_question")
   question_type_id: Int
   is_active: Boolean
   correct_reason: String
@@ -128,9 +123,7 @@ type Slide {
   id: ID!
   quiz_id: Int
   title: String
-  th_title: String
   long_desc: String
-  th_long_desc: String
   show_slide: Boolean
   order: String
   created_at: DateTime!

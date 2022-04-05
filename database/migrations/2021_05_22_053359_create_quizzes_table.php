@@ -37,13 +37,11 @@ class CreateQuizzesTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->increments('id');
             $table->text('question');
-            $table->text('th_question');
             $table->unsignedInteger('question_type_id');
             $table->text('media_url')->nullable();
             $table->string('media_type')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('correct_reason')->nullable();
-            $table->text('th_correct_reason')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('question_type_id')->references('id')->on('question_types')->onDelete('cascade');
@@ -64,7 +62,6 @@ class CreateQuizzesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('question_id');
             $table->string('option')->nullable();
-            $table->string('th_option')->nullable();
             $table->string('media_url')->nullable();
             $table->string('media_type')->nullable();
             $table->boolean('is_correct')->default(false);
@@ -78,12 +75,9 @@ class CreateQuizzesTable extends Migration
         Schema::create('quizzes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
-            $table->string('th_title');
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
-            $table->text('th_description')->nullable();
             $table->text('long_description')->nullable();
-            $table->text('th_long_description')->nullable();
             $table->float('total_marks')->default(0); //0 means no marks
             $table->float('pass_marks')->default(0); //0 means no pass marks
             $table->unsignedInteger('max_attempts')->default(0); //0 means unlimited attempts
@@ -105,9 +99,7 @@ class CreateQuizzesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('quiz_id');
             $table->string('title')->nullable();
-            $table->string('th_title')->nullable();
             $table->text('long_desc')->nullable();
-            $table->text('th_long_desc')->nullable();
             $table->boolean('show_slide')->default(true)->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->timestamps();
