@@ -5,10 +5,12 @@ scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload
 extend type Query @guard{
     getQuizzes(page:Int!, q:String @scope(name: "search"), filters:Filters @scope(name: "filter"), sort: _ @orderBy(columns: ["id"])): QuizzesData
     getAttempts(page:Int!, q:String @scope(name: "search"), filters:Filters @scope(name: "filter"), sort: _ @orderBy(columns: ["id"])): AttemptsData
+    getQuiz(id: ID!): QuizData
+    getAttempt(id: ID!): AttemptData
 }
 
 extend type Mutation {
-	startQuiz(quiz_id: ID! @rules(apply: ["required"])): QuizAttemptResponse @guard
+	startQuiz(quiz_id: ID! @rules(apply: ["required"])): attemptResponse @guard
 	attemptQuiz(input: CreateQuestionAnswerInput): attemptResponse @guard
 	attemptSingleQuestion(input: CreateSingleQuestionAnswerInput): attemptResponse @guard
 }
@@ -22,20 +24,9 @@ type AttemptsData {
 }
 
 type attemptResponse {
+  status:String
   message: String
-  score: String
-  scoreOutOf: String
-  questionsAttempted: String
-  correctAnswers: String
-  incorrectAnswers: String
   quiz: Quiz
-}
-
-type QuizAttemptResponse {
-	status:String
-	message:String!
-  quiz_attempt_id: Int
-  quiz_attempt: QuizAttempt
 }
 
 input CreateQuestionAnswerInput {
@@ -46,8 +37,9 @@ input CreateQuestionAnswerInput {
 input CreateSingleQuestionAnswerInput {
     quiz_attempt_id: ID!
     question_id: ID!
-    answers: JSON!
+    options: [String!]!
 }
+
 
 type QuizzesData {
 	items:[Quiz]
@@ -55,6 +47,18 @@ type QuizzesData {
 	q:String!
 	filters:Filters
 	sort:Filters
+}
+
+type QuizData {
+	quiz: Quiz
+  status:String
+	message:String
+}
+
+type AttemptData {
+	quiz_attempt: QuizAttempt
+  status:String
+	message:String
 }
 
 type CustomPaginator {
@@ -67,8 +71,11 @@ type CustomPaginator {
 type Quiz {
   id: ID!
   title: String
+  locale_title: String
   description: String
+  locale_description: String
   long_description: String
+  locale_long_description: String
   external_media: String
   img: String
   total_marks: String
@@ -78,6 +85,10 @@ type Quiz {
   show_slides: Boolean
   questions: [QuizQuestion] @hasMany
   slides: [Slide] @hasMany
+  translations: [Translation] @hasMany
+  attempts: [QuizAttempt] @hasMany
+  attempt: QuizAttempt
+  translation: JSON
   is_attempted: Boolean
   created_at: DateTime!
   updated_at: DateTime!
@@ -87,9 +98,12 @@ type Option {
   id: ID!
   question_id: Int
   title: String @rename(attribute: "option")
+  locale_title: String @rename(attribute: "locale_option")
+  translations: [Translation] @hasMany
   is_correct: Boolean
   show_option_media: Boolean
   order: String
+  translation: JSON
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -97,15 +111,20 @@ type Option {
 type Question {
   id: ID!
   title: String @rename(attribute: "question")
+  locale_itle: String @rename(attribute: "locale_question")
   question_type_id: Int
   is_active: Boolean
   correct_reason: String
+  locale_correct_reason: String
+  translations: [Translation] @hasMany
   options: [Option] @hasMany
   order: String
+  question_type: String
   worker_answers: JSON
   correct_answers: JSON
   is_correct_option: Boolean
   is_question_attempted: Boolean
+  translation: JSON
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -115,6 +134,10 @@ type QuizQuestion {
   quiz_id: String,
   question_id: String,
   question: Question
+  worker_answers: JSON
+  correct_answers: JSON
+  is_correct_option: Boolean
+  is_question_attempted: Boolean
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -123,9 +146,12 @@ type Slide {
   id: ID!
   quiz_id: Int
   title: String
+  translations: [Translation] @hasMany
   long_desc: String
+  locale_long_desc: String
   show_slide: Boolean
   order: String
+  translation: JSON
   created_at: DateTime!
   updated_at: DateTime!
 }
@@ -135,11 +161,22 @@ type QuizAttempt {
   quiz: Quiz
   score: String
   scoreOutOf: String
-  questionsAttempted: String
+  questionsAttempted: Int
   correctAnswers: String
   incorrectAnswers: String
   participant: Worker @belongsTo
+  is_complete: Boolean
+  result: String
+  total_questions: Int
+  questions_attempted: String
   worker_answers: JSON
   created_at: DateTime!
   updated_at: DateTime!
+}
+
+type Translation {
+  id: ID!
+  language_key: String
+  key: String
+  value: String
 }

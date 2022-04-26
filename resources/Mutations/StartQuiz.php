@@ -36,6 +36,19 @@ class StartQuiz
       }
       
       $quiz = Quiz::find($quiz_id);
+      // check if user has attempted this before and it is incomplete
+      $attemptExists = QuizAttempt::where('quiz_id', $quiz_id)->where('participant_id', Auth::guard('worker')->user()->id)->exists();
+      if($attemptExists){
+        $isAttemptInComplete = QuizAttempt::where('quiz_id', $quiz_id)->where('participant_id', Auth::guard('worker')->user()->id)->latest()->first()->is_complete;
+        if(!$isAttemptInComplete){
+          return [
+            'status'  => 'success',
+            'message' => __('Incomplete quiz attempt exist'),
+            'quiz' => $quiz
+          ]; 
+        }
+      }
+
       $attemptsByWorker = QuizAttempt::where('quiz_id', $quiz_id)->where('participant_id', Auth::guard('worker')->user()->id)->count();
       
       if($attemptsByWorker >= $quiz->max_attempts){
@@ -46,7 +59,7 @@ class StartQuiz
       }
 
       if (Auth::guard('worker')->check()) {
-        return DB::transaction(function () use ($quiz_id) {
+        return DB::transaction(function () use ($quiz_id, $quiz) {
           $quiz_attempt = new QuizAttempt;
   
           $quiz_attempt->quiz_id = $quiz_id;
@@ -57,8 +70,7 @@ class StartQuiz
           return [
             'status'  => 'success',
             'message' => __('Quiz attempt created'),
-            'quiz_attempt_id' => $quiz_attempt->id,
-            'quiz_attempt' => $quiz_attempt
+            'quiz' => $quiz
           ]; 
         });
       } 

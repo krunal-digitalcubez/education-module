@@ -16,10 +16,13 @@ class QuizAttempt extends Model
     protected $appends = [
       'score',
       'scoreOutOf',
-      'questionsAttempted',
       'correctAnswers',
       'incorrectAnswers',
-      'worker_answers'
+      'worker_answers',
+      'result',
+      'total_questions',
+      'questions_attempted',
+      'is_complete'
     ];
 
     public function quiz()
@@ -241,11 +244,6 @@ class QuizAttempt extends Model
       return $this->quiz->exists() ? $this->quiz->total_marks : 0.0;
     }
 
-    public function getQuestionsAttemptedAttribute()
-    {
-      return $this->quiz->exists() ? $this->quiz->total_marks : 0.0;
-    }
-
     public function getCorrectAnswersAttribute()
     {
       return $this->correct_count();
@@ -273,4 +271,47 @@ class QuizAttempt extends Model
       }
       return $tempArr;
     }
+
+    public function getResultAttribute(){
+      if(!$this->quiz()->exists()){
+        if($this->getScoreAttribute() >= $this->getScoreOutOfAttribute()){
+          return 'Pass';
+        }
+        else{
+          return 'Fail';
+        }
+      }
+      $minMarks = $this->quiz->pass_marks;
+      if($this->getScoreAttribute() >= $minMarks){
+        return 'Pass';
+      }
+      else{
+        return 'Fail';
+      }
+    }
+
+    public function getTotalQuestionsAttribute(){
+      if(!$this->quiz()->exists()){return 0;}
+      return $this->quiz->questions()->count();
+    }
+
+    public function getQuestionsAttemptedAttribute()
+    {
+      if(!$this->quiz()->exists()){return 0;}
+
+      return QuizAttemptAnswer::where('quiz_attempt_id', $this->attributes['id'])->count();
+    }
+    
+    public function getIsCompleteAttribute()
+    {
+      if(!$this->quiz()->exists()){return false;}
+
+      if($this->getTotalQuestionsAttribute() == $this->getQuestionsAttemptedAttribute()){
+        return true;
+      }
+      
+      return false;
+
+    }
+
 }
