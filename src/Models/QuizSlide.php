@@ -54,4 +54,9 @@ class QuizSlide extends Model
 
       return $this->attributes['long_desc'];
     }
+
+    public function scopeActive($query)
+    {
+      return $query->where('show_slide', 1);
+    }
 }

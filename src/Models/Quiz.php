@@ -55,8 +55,8 @@ class Quiz extends Model
 
     public function getImgAttribute()
     {
-      if ($this->attachment()->first()) {
-        return $this->attachment()->first()->url;
+      if ($this->attachment('quizimg_'.app()->getLocale())->first()) {
+        return $this->attachment('quizimg_'.app()->getLocale())->first()->url;
       }
   
       return "";

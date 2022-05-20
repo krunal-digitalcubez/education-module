@@ -299,7 +299,8 @@ class QuizAttempt extends Model
     {
       if(!$this->quiz()->exists()){return 0;}
 
-      return QuizAttemptAnswer::where('quiz_attempt_id', $this->attributes['id'])->count();
+      return QuizAttemptAnswer::where('quiz_attempt_id', $this->attributes['id'])->groupBy('quiz_question_id')->select('quiz_question_id', DB::raw('count(*) as total'))->get()->count();
+      // return QuizAttemptAnswer::where('quiz_attempt_id', $this->attributes['id'])->count();
     }
     
     public function getIsCompleteAttribute()
