@@ -50,6 +50,14 @@ class StartQuiz
       }
 
       $attemptsByWorker = QuizAttempt::where('quiz_id', $quiz_id)->where('participant_id', Auth::guard('worker')->user()->id)->count();
+
+      if($attemptsByWorker >= 1 && $quiz->is_read_only){
+        return [
+          'status'  => 'success',
+          'message' => __('Quiz attempt created'),
+          'quiz' => $quiz
+        ]; 
+      }
       
       if($attemptsByWorker >= $quiz->max_attempts){
         return [
