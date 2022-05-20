@@ -90,6 +90,7 @@ type Quiz {
   attempt: QuizAttempt
   translation: JSON
   is_attempted: Boolean
+  is_read_only: Boolean
   created_at: DateTime!
   updated_at: DateTime!
 }
