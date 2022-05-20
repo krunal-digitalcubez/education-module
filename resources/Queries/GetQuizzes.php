@@ -23,7 +23,7 @@ class GetQuizzes {
             return $page;
         });
 
-        $requests = Quiz::paginate(10);
+        $requests = Quiz::active()->paginate(10);
 
 
         return [

@@ -39,13 +39,14 @@ class AttemptSingleQuestion
         return DB::transaction(function () use ($question_id, $quiz_attempt_id, $answers) {
           // $answers = explode(',',$answers[0]->answers);
           if(count($answers) >= 0){
-
+		
           // check if that question exists in attempted answers 
             $questionExists = QuizAttemptAnswer::where('quiz_attempt_id', $quiz_attempt_id)->where('quiz_question_id', $question_id)->exists();
-
+			
             if($questionExists){
               $oldQuestion = QuizAttemptAnswer::where('quiz_attempt_id', $quiz_attempt_id)->where('quiz_question_id', $question_id)->delete();
             }
+			
             foreach($answers as $answer){
               $newAnswer = new QuizAttemptAnswer;
               $newAnswer->quiz_attempt_id = $quiz_attempt_id;
@@ -53,14 +54,16 @@ class AttemptSingleQuestion
               $newAnswer->question_option_id = (int)$answer;
               $newAnswer->save();
             }
-
+			
             $quizAttempt = QuizAttempt::find($quiz_attempt_id);
+			
             $quiz = $quizAttempt->quiz;
+			
 
             return [
               'status'  => 'success',
               'message' => __('Quiz answers submitted succesfully'),
-              'quiz' => $quizAttempt->quiz
+              'quiz' => $quiz
             ];
           }
         });

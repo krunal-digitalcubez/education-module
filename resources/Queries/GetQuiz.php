@@ -7,7 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class getQuiz {
+class GetQuiz {
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
@@ -18,14 +18,14 @@ class getQuiz {
         if(!$quizExists){
           $response = [];
           $response['quiz'] = NULL;
-          $response['status'] = false;
+          $response['status'] = "fail";
           $response['message'] = 'Quiz does not exists';
         }
 
         $quiz = Quiz::where('id', $id)->first();
         $response = [];
         $response['quiz'] = $quiz;
-        $response['status'] = true;
+        $response['status'] = "success";
 
         return $response;
     }

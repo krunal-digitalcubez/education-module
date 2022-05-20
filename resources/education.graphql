@@ -83,8 +83,8 @@ type Quiz {
   max_attempts: String
   is_published: Boolean
   show_slides: Boolean
-  questions: [QuizQuestion] @hasMany
-  slides: [Slide] @hasMany
+  questions: [QuizQuestion] @hasMany @scope(name: "active")
+  slides: [Slide] @hasMany @scope(name: "active")
   translations: [Translation] @hasMany
   attempts: [QuizAttempt] @hasMany
   attempt: QuizAttempt

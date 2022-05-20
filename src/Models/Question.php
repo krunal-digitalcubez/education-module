@@ -90,7 +90,6 @@ class Question extends Model
       if(!$attemptExists){
         return [];
       }
-
       $attempt = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->latest()->first();
       return $this->quiz_attempt_answers()->where('quiz_attempt_id', $attempt->id)->pluck('question_option_id');
     }
@@ -99,7 +98,6 @@ class Question extends Model
       if(!Auth::user()){
         return false;
       }
-      logger([$this->getCorrectAnswersAttribute(), $this->getWorkerAnswersAttribute()]);
       return $this->getCorrectAnswersAttribute() == $this->getWorkerAnswersAttribute();
       // return isArrayEqual($this->getCorrectAnswersAttribute(), $this->getWorkerAnswersAttribute()) ? true : false;
     }
