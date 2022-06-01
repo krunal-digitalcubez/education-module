@@ -55,7 +55,7 @@ class QuizAttempt extends Model
             } elseif ($question->question_type_id == QuestionType::QUESTION_TYPE_MCMA) {
                 $correct_answer =  ($question->correct_options())->pluck('id');
             } elseif ($question->question_type_id == QuestionType::QUESTION_TYPE_FILL) {
-                $correct_answer = ($question->correct_options())->first()->option;
+                $correct_answer = "";
             } else {
                 $correct_answer = null;
             }
@@ -152,7 +152,7 @@ class QuizAttempt extends Model
             } elseif ($question->question_type_id == QuestionType::QUESTION_TYPE_MCMA) {
                 $correct_answer =  ($question->correct_options())->pluck('id');
             } elseif ($question->question_type_id == QuestionType::QUESTION_TYPE_FILL) {
-                $correct_answer = ($question->correct_options())->first()->option;
+                $correct_answer = "";
             } else {
                 $correct_answer = null;
             }
@@ -228,7 +228,10 @@ class QuizAttempt extends Model
                         $score += $quiz_question['marks'];
                     }
                 }
-            } else {
+            } elseif ($quiz_question['question_type_id'] == QuestionType::QUESTION_TYPE_SURVEY){
+              $score += $quiz_question['marks'];
+            }
+            else {
                 $score += $quiz_question['marks'];
             }
         }

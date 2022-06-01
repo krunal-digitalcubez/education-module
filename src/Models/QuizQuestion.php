@@ -44,7 +44,7 @@ class QuizQuestion extends Model
       if(!Auth::user()){
         return [];
       }
-      return $this->question->correct_options()->pluck('id');
+      return $this->question->correct_options()->pluck('id')->toArray();
     }
 
     public function getWorkerAnswersAttribute(){
@@ -68,15 +68,27 @@ class QuizQuestion extends Model
       }
 
       $attempt = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->latest()->first();
-      return $this->quiz_attempt_answers()->where('quiz_attempt_id', $attempt->id)->pluck('question_option_id');
+      return $this->quiz_attempt_answers()->where('quiz_attempt_id', $attempt->id)->pluck('question_option_id')->toArray();
     }
 
     public function getIsCorrectOptionAttribute(){
       if(!Auth::user()){
         return false;
       }
-      logger([$this->getCorrectAnswersAttribute(), $this->getWorkerAnswersAttribute()]);
-      return $this->getCorrectAnswersAttribute() == $this->getWorkerAnswersAttribute();
+
+      if($this->question->question_type_id == QuestionType::QUESTION_TYPE_SURVEY){
+        return true;
+      }
+      
+      $correctAnswers = $this->getCorrectAnswersAttribute();
+      $workerAnswers =$this->getWorkerAnswersAttribute();
+
+      sort($correctAnswers);
+      sort($workerAnswers);
+
+      // logger('options-answes', [$correctAnswers, $workerAnswers]);
+      return $correctAnswers == $workerAnswers;
+      // return $this->getCorrectAnswersAttribute() == $this->getWorkerAnswersAttribute();
       // return isArrayEqual($this->getCorrectAnswersAttribute(), $this->getWorkerAnswersAttribute()) ? true : false;
     }
 
