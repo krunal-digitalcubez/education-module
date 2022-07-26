@@ -55,13 +55,40 @@ class Question extends Model
       $translations = $translations->mapWithKeys(function ($item) {
               return [$item['key'] => $item['value']];
       });
-      return [
-        'en' => [
-          "question" => $this->question,
-          "correct_reason" => $this->correct_reason,
-        ],
-        'th' => $translations->toArray(),
-      ];
+
+      $translations = $this->exists ? $this->translations()->select('key', 'value')->get() : collect([]);
+      $translations = $translations->mapWithKeys(function ($item) {
+        return [$item['key'] => $item['value']];
+      });
+
+      $locales = config('app.available_locales');
+
+      $keys = ['question', 'correct_reason'];
+
+      foreach($locales as $title => $locale){
+        $translations = $this->exists ? $this->translations()->where('language_key', $locale)->select('key', 'value')->get() : collect([]);
+        $translations = $translations->mapWithKeys(function ($item) {
+          return [$item['key'] => $item['value']];
+        });
+        foreach($keys as $key){
+          $trans[$locale] = $translations->toArray();
+        }
+
+        // for english
+        foreach($keys as $key){
+          $trans['en'][$key] = $this->attributes[$key];
+        }
+
+        // check if empty result add english to them
+        foreach($trans as $tran => $val){
+          foreach($keys as $key){
+            if(!isset($val[$key])){
+              $trans[$tran][$key] = $this->attributes[$key];
+            }
+          }
+        }
+      }
+      return $trans;
     }
 
     public function getCorrectAnswersAttribute(){
