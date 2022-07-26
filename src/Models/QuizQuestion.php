@@ -13,7 +13,7 @@ class QuizQuestion extends Model
 
     protected $guarded = ['id'];
 
-    protected $appends = ['worker_answers', 'correct_answers', 'is_correct_option', 'is_question_attempted'];
+    protected $appends = ['worker_answers', 'correct_answers', 'is_correct_option', 'is_question_attempted', 'correct_answers_str'];
 
 
     public function quiz()
@@ -44,7 +44,92 @@ class QuizQuestion extends Model
       if(!Auth::user()){
         return [];
       }
+
+      if($this->question->question_type_id == QuestionType::QUESTION_TYPE_SURVEY){
+        return $this->getWorkerAnswersAttribute();
+      }
+
       return $this->question->correct_options()->pluck('id')->toArray();
+    }
+
+    public function getCorrectAnswersStrAttribute(){
+      if($this->question->correct_options()->count() >= 1){
+        if($this->question->question_type_id == QuestionType::QUESTION_TYPE_MCMA || $this->question->question_type_id == QuestionType::QUESTION_TYPE_MCSA){
+          $correctOptions = $this->question->correct_options()->toArray();
+
+          $finalCorrectOptions = [];
+
+          if(count($correctOptions) >= 1){
+            foreach($correctOptions as $correctOption){
+              $localeOption = $correctOption['translation'][app()->getLocale()]['option'] ?? '';
+              array_push($finalCorrectOptions, $localeOption);
+            }
+            
+            return implode(', ', $finalCorrectOptions);
+          }
+
+          return $finalCorrectOptions;
+        }
+
+        if($this->question->question_type_id == QuestionType::QUESTION_TYPE_SURVEY){
+          // get the answer submitted by worker
+          $quizQuestionExists = QuizQuestion::where('question_id', $this->question->id)->exists();
+          if(!$quizQuestionExists){
+            return '';
+          }
+    
+          $quizQuestion = QuizQuestion::where('question_id', $this->question->id)->latest()->first();
+          $quiz = $quizQuestion->quiz_id;
+    
+          $attemptExists = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->exists();
+          if(!$attemptExists){
+            return '';
+          }
+    
+          $attempt = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->latest()->first();
+          $answers = $this->quiz_attempt_answers()->where('quiz_attempt_id', $attempt->id)->pluck('question_option_id')->toArray();
+
+          // get the answers
+          $correctOptions = $this->question->correct_options()->toArray();
+
+          $finalCorrectOptions = [];
+
+          if(count($correctOptions) >= 1){
+            foreach($correctOptions as $correctOption){
+              if(in_array($correctOption['id'], $answers)){
+                $localeOption = $correctOption['translation'][app()->getLocale()]['option'] ?? '';
+                array_push($finalCorrectOptions, $localeOption);
+              }
+            }
+            
+            return implode(', ', $finalCorrectOptions);
+          }
+
+          return $finalCorrectOptions;
+        }
+
+        if($this->question->question_type_id == QuestionType::QUESTION_TYPE_FILL){
+          $quizQuestionExists = QuizQuestion::where('question_id', $this->question->id)->exists();
+          if(!$quizQuestionExists){
+            return [];
+          }
+    
+          $quizQuestion = QuizQuestion::where('question_id', $this->question->id)->latest()->first();
+          $quiz = $quizQuestion->quiz_id;
+    
+          $attemptExists = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->exists();
+          if(!$attemptExists){
+            return [];
+          }
+    
+          $attempt = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->latest()->first();
+          $answer = $this->quiz_attempt_answers()->where('quiz_attempt_id', $attempt->id)->pluck('answer')->toArray();
+          return implode(', ', $answer);
+        }
+
+
+      }
+      return '';
     }
 
     public function getWorkerAnswersAttribute(){
@@ -77,6 +162,10 @@ class QuizQuestion extends Model
       }
 
       if($this->question->question_type_id == QuestionType::QUESTION_TYPE_SURVEY){
+        return true;
+      }
+
+      if($this->question->question_type_id == QuestionType::QUESTION_TYPE_FILL){
         return true;
       }
       
