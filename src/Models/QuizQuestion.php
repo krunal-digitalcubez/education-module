@@ -111,7 +111,7 @@ class QuizQuestion extends Model
         if($this->question->question_type_id == QuestionType::QUESTION_TYPE_FILL){
           $quizQuestionExists = QuizQuestion::where('question_id', $this->question->id)->exists();
           if(!$quizQuestionExists){
-            return [];
+            return '';
           }
     
           $quizQuestion = QuizQuestion::where('question_id', $this->question->id)->latest()->first();
@@ -119,7 +119,7 @@ class QuizQuestion extends Model
     
           $attemptExists = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->exists();
           if(!$attemptExists){
-            return [];
+            return '';
           }
     
           $attempt = QuizAttempt::where('participant_id', Auth::user()->id)->where('quiz_id', $quiz)->latest()->first();
